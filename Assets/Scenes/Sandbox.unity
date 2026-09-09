@@ -245,6 +245,10 @@ PrefabInstance:
       value: Network_Manager
       objectReference: {fileID: 0}
     - target: {fileID: 4609710554980008168, guid: 8d47d1dd63c11004382bcc7462faf29a, type: 3}
+      propertyPath: NetworkConfig.PlayerPrefab
+      value: 
+      objectReference: {fileID: 3193142283408439798, guid: 0014026f911cb5e48bdd30c42fda315a, type: 3}
+    - target: {fileID: 4609710554980008168, guid: 8d47d1dd63c11004382bcc7462faf29a, type: 3}
       propertyPath: NetworkConfig.EnableSceneManagement
       value: 1
       objectReference: {fileID: 0}

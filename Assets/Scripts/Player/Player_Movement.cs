@@ -1,6 +1,8 @@
+using System.Globalization;
+using Unity.Netcode;
 using UnityEngine;
 
-public class Player_Movement : MonoBehaviour
+public class Player_Movement : NetworkBehaviour
 {
 
     //References
@@ -25,6 +27,10 @@ public class Player_Movement : MonoBehaviour
 
     void Update()
     {
+
+        if (!IsOwner)
+            return;
+
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
