@@ -1,5 +1,6 @@
 using System.Globalization;
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player_Look : NetworkBehaviour
@@ -17,11 +18,16 @@ public class Player_Look : NetworkBehaviour
     private float xRotation;
 
     private NetworkVariable<float> networkLookPitch =
-     new NetworkVariable<float>(
-         0f,
-         NetworkVariableReadPermission.Everyone,
-         NetworkVariableWritePermission.Owner
-     );
+    new NetworkVariable<float>(
+        0f,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Owner
+    );
+
+    [Header("Interaction Settings")]
+    [SerializeField] private float interactDistance;
+    private I_Interactable currentInteractable;
+
 
     public override void OnNetworkSpawn()
     {
@@ -52,10 +58,44 @@ public class Player_Look : NetworkBehaviour
             xRotation = Mathf.Clamp(xRotation, -45f, 45f);
             camera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             playerOrientation.Rotate(Vector3.up * mouseX);
-
             networkLookPitch.Value = xRotation;
+
+            Detection();
+
+            if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
+            {
+                currentInteractable.Interact();
+            }
         }
 
         orientateEyes.localRotation = Quaternion.Euler(networkLookPitch.Value, 0f, 0f);
+    }
+
+
+    private void Detection()
+    {
+        Vector3 origin = camera.transform.position;
+        Vector3 direction = camera.transform.forward;
+        
+        Debug.DrawRay(origin, direction * interactDistance, Color.red);
+
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, interactDistance))
+        {
+            I_Interactable interactable = hit.collider.GetComponentInParent<I_Interactable>();
+
+            if (interactable != null)
+            {
+                if(currentInteractable != interactable)
+                {
+                    currentInteractable = interactable;
+                    currentInteractable.Detect();
+                }
+
+                return;
+            }
+        }
+
+        currentInteractable = null;
+        UI_Manager.instance.hud.DisableDetect();
     }
 }
