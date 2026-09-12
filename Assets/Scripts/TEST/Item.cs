@@ -96,4 +96,9 @@ public class Item : NetworkBehaviour, I_Interactable
         rb.isKinematic = held;
         itemCollider.enabled = !held;
     }
+
+    public GameObject GetObject()
+    {
+        return gameObject;
+    }
 }

@@ -26,7 +26,9 @@ public class Player_Look : NetworkBehaviour
 
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance;
+    [SerializeField] private GameObject heldObject;
     private I_Interactable currentInteractable;
+
 
 
     public override void OnNetworkSpawn()
@@ -60,11 +62,15 @@ public class Player_Look : NetworkBehaviour
             playerOrientation.Rotate(Vector3.up * mouseX);
             networkLookPitch.Value = xRotation;
 
+            if (heldObject != null) return;
+
             Detection();
 
             if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
             {
                 currentInteractable.Interact();
+                heldObject = currentInteractable.GetObject();
+                UI_Manager.instance.hud.DisableDetect();
             }
         }
 
