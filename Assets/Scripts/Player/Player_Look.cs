@@ -26,6 +26,7 @@ public class Player_Look : NetworkBehaviour
 
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance;
+    public Transform holdYPoint;
     private I_Interactable heldInteractable;
     private I_Interactable currentInteractable;
 

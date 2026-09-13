@@ -9,7 +9,7 @@ public class Item : NetworkBehaviour, I_Interactable
 
     [Header("Settings")]
     [SerializeField] private Message_Type msg;
-    [SerializeField] private Vector3 heldPosition = new Vector3(0f, 1.2f, 1.5f);
+    private Transform currentHoldPoint;
 
 
     //Server Variables
@@ -20,6 +20,20 @@ public class Item : NetworkBehaviour, I_Interactable
     {
         isHeld.OnValueChanged += OnHeldChanged;
         ApplyHeldState(isHeld.Value);
+    }
+
+    private void Update()
+    {
+        if (!IsServer)
+            return;
+
+        if (!isHeld.Value)
+            return;
+
+        if (currentHoldPoint == null)
+            return;
+
+        transform.position = currentHoldPoint.position;
     }
 
     public void Detect()
@@ -51,12 +65,16 @@ public class Item : NetworkBehaviour, I_Interactable
 
         if (player == null) return;
 
+        Player_Look playerLook = player.GetComponent<Player_Look>();
+
+        currentHoldPoint = playerLook.holdYPoint;
+
         holdingClientID = clientId;
         isHeld.Value = true;
         NetworkObject.TrySetParent(player, false);
 
-        transform.localPosition = heldPosition;
-        transform.localRotation = Quaternion.identity;
+        transform.position = currentHoldPoint.position;
+        //transform.localRotation = Quaternion.identity;
     }
 
     [Rpc(SendTo.Server)]
@@ -68,6 +86,7 @@ public class Item : NetworkBehaviour, I_Interactable
         if (holdingClientID != clientID) return;
 
         NetworkObject.TryRemoveParent(true);
+        currentHoldPoint = null;
         isHeld.Value = false;
     }
 
