@@ -26,7 +26,7 @@ public class Player_Look : NetworkBehaviour
 
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance;
-    [SerializeField] private GameObject heldObject;
+    private I_Interactable heldInteractable;
     private I_Interactable currentInteractable;
 
 
@@ -62,21 +62,35 @@ public class Player_Look : NetworkBehaviour
             playerOrientation.Rotate(Vector3.up * mouseX);
             networkLookPitch.Value = xRotation;
 
-            if (heldObject != null) return;
-
-            Detection();
-
-            if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
-            {
-                currentInteractable.Interact();
-                heldObject = currentInteractable.GetObject();
-                UI_Manager.instance.hud.DisableDetect();
-            }
+            HandleDetection();
         }
 
         orientateEyes.localRotation = Quaternion.Euler(networkLookPitch.Value, 0f, 0f);
     }
 
+    private void HandleDetection()
+    {
+        if (heldInteractable != null)
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                heldInteractable.Remove();
+                heldInteractable = null;
+            }
+
+            return;
+        }
+
+        Detection();
+
+        if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
+        {
+            currentInteractable.Interact();
+            heldInteractable = currentInteractable;
+            currentInteractable = null;
+            UI_Manager.instance.hud.DisableDetect();
+        }
+    }
 
     private void Detection()
     {

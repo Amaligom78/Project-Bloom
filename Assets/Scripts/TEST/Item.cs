@@ -11,24 +11,15 @@ public class Item : NetworkBehaviour, I_Interactable
     [SerializeField] private Message_Type msg;
     [SerializeField] private Vector3 heldPosition = new Vector3(0f, 1.2f, 1.5f);
 
-    private NetworkVariable<bool> isHeld =
-        new NetworkVariable<bool>(false);
+
+    //Server Variables
+    private NetworkVariable<bool> isHeld = new NetworkVariable<bool>(false);
+    private ulong holdingClientID = ulong.MaxValue;
 
     public override void OnNetworkSpawn()
     {
         isHeld.OnValueChanged += OnHeldChanged;
-
         ApplyHeldState(isHeld.Value);
-    }
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
     }
 
     public void Detect()
@@ -53,17 +44,15 @@ public class Item : NetworkBehaviour, I_Interactable
     [Rpc(SendTo.Server)]
     private void RequestPickupRpc(RpcParams rpcParams = default)
     {
-        ulong clientId = rpcParams.Receive.SenderClientId;
+        if (isHeld.Value) return;
 
+        ulong clientId = rpcParams.Receive.SenderClientId;
         NetworkObject player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
 
         if (player == null) return;
 
+        holdingClientID = clientId;
         isHeld.Value = true;
-
-        rb.isKinematic = true;
-        itemCollider.enabled = false;
-
         NetworkObject.TrySetParent(player, false);
 
         transform.localPosition = heldPosition;
@@ -71,14 +60,15 @@ public class Item : NetworkBehaviour, I_Interactable
     }
 
     [Rpc(SendTo.Server)]
-    private void RequestDropRpc()
+    private void RequestDropRpc(RpcParams rpcParams = default)
     {
-        isHeld.Value = false;
+        ulong clientID = rpcParams.Receive.SenderClientId;
+
+        if(!isHeld.Value) return;
+        if (holdingClientID != clientID) return;
 
         NetworkObject.TryRemoveParent(true);
-
-        rb.isKinematic = false;
-        itemCollider.enabled = true;
+        isHeld.Value = false;
     }
 
     public override void OnNetworkDespawn()
@@ -97,8 +87,14 @@ public class Item : NetworkBehaviour, I_Interactable
         itemCollider.enabled = !held;
     }
 
+    public void Remove()
+    {
+        RequestDropRpc();
+    }
+
     public GameObject GetObject()
     {
         return gameObject;
     }
+
 }
