@@ -6,6 +6,7 @@ public class Input_Manager : MonoBehaviour
     //Binded Keys
     [Header("Key Bindings")]
     public KeyCode interactKey;
+    public KeyCode dropKey;
 
     public static Input_Manager instance;
 

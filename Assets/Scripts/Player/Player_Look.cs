@@ -73,7 +73,7 @@ public class Player_Look : NetworkBehaviour
     {
         if (heldInteractable != null)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(Input_Manager.instance.dropKey))
             {
                 heldInteractable.Remove();
                 heldInteractable = null;

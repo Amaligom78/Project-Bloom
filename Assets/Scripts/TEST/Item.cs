@@ -1,14 +1,15 @@
 using Unity.Netcode;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class Item : NetworkBehaviour, I_Interactable
 {
     [Header("References")]
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Collider itemCollider;
+    [SerializeField] private Item_Data itemData;
 
     [Header("Settings")]
-    [SerializeField] private Message_Type msg;
     private Transform currentHoldPoint;
 
 
@@ -20,6 +21,8 @@ public class Item : NetworkBehaviour, I_Interactable
     {
         isHeld.OnValueChanged += OnHeldChanged;
         ApplyHeldState(isHeld.Value);
+
+        gameObject.name = itemData.GetItemName(itemData.itemType);
     }
 
     private void Update()
@@ -40,7 +43,7 @@ public class Item : NetworkBehaviour, I_Interactable
     {
         if (isHeld.Value) return;
 
-        UI_Manager.instance.hud.Detect(Input_Manager.instance.GetKeyBindingMSG(msg));
+        UI_Manager.instance.hud.Detect(Input_Manager.instance.GetKeyBindingMSG(itemData.msgType));
     }
 
     public void Interact()
@@ -103,7 +106,7 @@ public class Item : NetworkBehaviour, I_Interactable
     private void ApplyHeldState(bool held)
     {
         rb.isKinematic = held;
-        itemCollider.enabled = !held;
+        //itemCollider.enabled = !held;
     }
 
     public void Remove()
@@ -116,4 +119,19 @@ public class Item : NetworkBehaviour, I_Interactable
         return gameObject;
     }
 
+    public Item_Data GetItemData()
+    {
+        if(itemData != null)
+        {
+            return itemData;
+        }
+
+        Debug.LogError(gameObject.name + " Requires Data!");
+        return null;
+    }
+
+    public void SetItemData(Item_Data _data)
+    {
+        itemData = _data;
+    }
 }
