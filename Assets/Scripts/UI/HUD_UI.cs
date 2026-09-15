@@ -1,14 +1,21 @@
 using UnityEngine;
 using TMPro;
 using System;
+using Unity.Netcode;
 
-public class HUD_UI : MonoBehaviour
+public class HUD_UI : NetworkBehaviour
 {
     public TMP_Text detectionTxt;
+    public TMP_Text currentMoneyTxt;
+
+    public override void OnNetworkSpawn()
+    {
+
+    }
 
     void Start()
     {
-        
+        UpdateEarningsUI("0");
     }
 
     void Update()
@@ -26,5 +33,10 @@ public class HUD_UI : MonoBehaviour
     {
         detectionTxt.text = "";
         detectionTxt.gameObject.SetActive(false);
+    }
+
+    public void UpdateEarningsUI(string _earningsTxt)
+    {
+        currentMoneyTxt.text = "Earnings: $" + _earningsTxt;
     }
 }

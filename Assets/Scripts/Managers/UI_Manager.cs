@@ -1,6 +1,7 @@
+using Unity.Netcode;
 using UnityEngine;
 
-public class UI_Manager : MonoBehaviour
+public class UI_Manager : NetworkBehaviour
 {
 
     public static UI_Manager instance { get; private set; }

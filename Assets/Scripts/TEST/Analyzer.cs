@@ -10,10 +10,20 @@ public class Analyzer : NetworkBehaviour
     //Network Variables
     [SerializeField] private NetworkVariable<Item_Type> requestedItemType = new NetworkVariable<Item_Type>();
     [SerializeField] private NetworkVariable<bool> rightItemPlaced =  new NetworkVariable<bool>(false);
+    [SerializeField] private NetworkVariable<int> itemCost = new NetworkVariable<int>();
+    [SerializeField] private NetworkVariable<int> paidOut = new NetworkVariable<int>();
 
     public override void OnNetworkSpawn()
     {
+        paidOut.OnValueChanged += Game_Manager.instance.OnAddEarnings;
+    }
 
+    public void Update()
+    {
+        if(Input.GetKeyUp(KeyCode.Return))
+        {
+            ProcessEarningsRpc();
+        }
     }
 
     public void GenerateRequestedItem()
@@ -48,6 +58,7 @@ public class Analyzer : NetworkBehaviour
         if(itemData == null) return;
 
         currentItem = interactable;
+        itemCost.Value = itemData.cost;
         CheckItemData();
     }
 
@@ -63,5 +74,14 @@ public class Analyzer : NetworkBehaviour
 
         currentItem = null;
         rightItemPlaced.Value = false;
+    }
+
+    [Rpc(SendTo.Server)]
+    private void ProcessEarningsRpc(RpcParams rpcParams = default)
+    {
+        //if(!rightItemPlaced.Value) return;
+        if(currentItem == null) return;
+
+        paidOut.Value = itemCost.Value;
     }
 }
