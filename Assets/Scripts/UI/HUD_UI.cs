@@ -8,20 +8,6 @@ public class HUD_UI : NetworkBehaviour
     public TMP_Text detectionTxt;
     public TMP_Text currentMoneyTxt;
 
-    public override void OnNetworkSpawn()
-    {
-
-    }
-
-    void Start()
-    {
-        UpdateEarningsUI("0");
-    }
-
-    void Update()
-    {
-        
-    }
 
     public void Detect(string _text)
     {

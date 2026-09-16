@@ -1,3 +1,4 @@
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -13,22 +14,32 @@ public class Game_Manager : NetworkBehaviour
         instance = this;
     }
 
-    void Start()
+    public override void OnNetworkSpawn()
     {
-        
+        earnings.OnValueChanged += OnAddEarnings;
+        UpdateEarningsUI(earnings.Value);
     }
 
-
-    void Update()
+    public override void OnNetworkDespawn()
     {
-        
+        earnings.OnValueChanged -= OnAddEarnings;
+    }
+
+    public void AddEarnings(int _amount)
+    {
+        if (!IsServer) return;
+
+        earnings.Value += _amount;
     }
 
     public void OnAddEarnings(int previousValue, int newValue)
     {
-        //if (!IsServer) return;
-
-        earnings.Value += newValue;
-        UI_Manager.instance.hud.UpdateEarningsUI(earnings.Value.ToString());
+        UpdateEarningsUI(newValue);
     }
+
+    public void UpdateEarningsUI(int _amount)
+    {
+        UI_Manager.instance.hud.UpdateEarningsUI(_amount.ToString());
+    }
+
 }

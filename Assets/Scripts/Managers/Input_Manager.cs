@@ -41,6 +41,8 @@ public class Input_Manager : MonoBehaviour
         {
             case Message_Type.PICKUP:
                 return "[" + interactKey.ToString() + "] Pick Up";
+            case Message_Type.USE:
+                return "[" + interactKey.ToString() + "] Use";
             default:
                 return "ERROR!";
         }
