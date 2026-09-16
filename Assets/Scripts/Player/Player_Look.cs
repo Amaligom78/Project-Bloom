@@ -27,7 +27,7 @@ public class Player_Look : NetworkBehaviour, I_Player
     [Header("Interaction Settings")]
     [SerializeField] private float interactDistance;
     public Transform holdYPoint;
-    private I_Interactable heldInteractable;
+    private I_Holdable heldInteractable;
     private I_Interactable currentInteractable;
 
 
@@ -86,10 +86,15 @@ public class Player_Look : NetworkBehaviour, I_Player
 
         if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
         {
-            currentInteractable.Interact(GetInterface());
-            heldInteractable = currentInteractable;
-            currentInteractable = null;
+            I_Interactable interacted = currentInteractable;
+            interacted.Interact(this);
             UI_Manager.instance.hud.DisableDetect();
+
+            if(interacted is I_Holdable holdable)
+            {
+                heldInteractable = holdable;
+                currentInteractable = null;
+            }
         }
     }
 
@@ -123,11 +128,6 @@ public class Player_Look : NetworkBehaviour, I_Player
     public GameObject GetPlayer()
     {
         return gameObject;
-    }
-
-    public I_Player GetInterface()
-    {
-        return gameObject.GetComponent<I_Player>();
     }
 
     public void ResetInteractable()

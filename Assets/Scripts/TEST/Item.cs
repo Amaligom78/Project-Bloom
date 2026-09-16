@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using static UnityEditor.Progress;
 
-public class Item : NetworkBehaviour, I_Interactable
+public class Item : NetworkBehaviour, I_Interactable, I_Holdable
 {
     [Header("References")]
     [SerializeField] private Rigidbody rb;
@@ -112,11 +112,6 @@ public class Item : NetworkBehaviour, I_Interactable
     public void Remove()
     {
         RequestDropRpc();
-    }
-
-    public GameObject GetObject()
-    {
-        return gameObject;
     }
 
     public Item_Data GetItemData()
