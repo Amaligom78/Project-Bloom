@@ -6,6 +6,7 @@ public class Analyzer : NetworkBehaviour
 {
 
     private I_Item currentItem;
+    private float nextProcessTime;
 
     //Network Variables
     [SerializeField] private NetworkVariable<Item_Type> requestedItemType = new NetworkVariable<Item_Type>();
@@ -70,9 +71,11 @@ public class Analyzer : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void ProcessEarningsRpc(RpcParams rpcParams = default)
     {
+        if (Time.time < nextProcessTime) return;
+        if (currentItem == null) return;
         if(!rightItemPlaced.Value) return;
-        if(currentItem == null) return;
 
+        nextProcessTime = Time.time + 1f;
         Game_Manager.instance.AddEarnings(itemCost.Value);
     }
 }

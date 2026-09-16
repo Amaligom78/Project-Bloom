@@ -7,25 +7,36 @@ public class Analyzer_Button : MonoBehaviour, I_Interactable
 
     public Message_Type msgType;
     public Analyzer analyzer;
-    private Player_Look playerDetecting;
+
+    private bool canInteract = true;
 
     public void Detect()
     {
+        if (!canInteract) return;
+                        
         UI_Manager.instance.hud.Detect(Input_Manager.instance.GetKeyBindingMSG(msgType));
     }
 
     public void Interact(I_Player _interactingPlayer)
     {
-        playerDetecting = _interactingPlayer.GetPlayer().GetComponent<Player_Look>();
+        if (!canInteract) return;
+
+        canInteract = false;
+
+        Player_Look player = _interactingPlayer.GetPlayer().GetComponent<Player_Look>();
         analyzer.ProcessEarningsRpc();
-        StartCoroutine(RepeatInteraction());
+        StartCoroutine(RepeatInteraction(player));
     }
 
-    public IEnumerator RepeatInteraction()
+    public IEnumerator RepeatInteraction(Player_Look _player)
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(.5f);
 
-        playerDetecting.ResetInteractable();
-        playerDetecting = null;
+        canInteract = true;
+
+        if(_player != null)
+        {
+            _player.ResetInteractable();
+        }
     }
 }

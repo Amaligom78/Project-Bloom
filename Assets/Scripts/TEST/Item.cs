@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using static UnityEditor.Progress;
 
-public class Item : NetworkBehaviour, I_Interactable, I_Holdable
+public class Item : NetworkBehaviour, I_Interactable, I_Holdable, I_Item
 {
     [Header("References")]
     [SerializeField] private Rigidbody rb;
