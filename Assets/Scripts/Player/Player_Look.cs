@@ -3,7 +3,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player_Look : NetworkBehaviour
+public class Player_Look : NetworkBehaviour, I_Player
 {
 
     [Header("References")]
@@ -86,7 +86,7 @@ public class Player_Look : NetworkBehaviour
 
         if (currentInteractable != null && Input.GetKeyDown(Input_Manager.instance.interactKey))
         {
-            currentInteractable.Interact();
+            currentInteractable.Interact(GetInterface());
             heldInteractable = currentInteractable;
             currentInteractable = null;
             UI_Manager.instance.hud.DisableDetect();
@@ -118,5 +118,20 @@ public class Player_Look : NetworkBehaviour
 
         currentInteractable = null;
         UI_Manager.instance.hud.DisableDetect();
+    }
+
+    public GameObject GetPlayer()
+    {
+        return gameObject;
+    }
+
+    public I_Player GetInterface()
+    {
+        return gameObject.GetComponent<I_Player>();
+    }
+
+    public void ResetInteractable()
+    {
+        currentInteractable = null;
     }
 }

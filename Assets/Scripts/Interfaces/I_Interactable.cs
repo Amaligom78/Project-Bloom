@@ -3,7 +3,8 @@ using UnityEngine;
 public interface I_Interactable
 {
     public void Detect();
-    public void Interact();
+
+    public void Interact(I_Player _interactingPlayer);
 
     public void Remove();
 

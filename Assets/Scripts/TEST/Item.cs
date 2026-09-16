@@ -46,7 +46,7 @@ public class Item : NetworkBehaviour, I_Interactable
         UI_Manager.instance.hud.Detect(Input_Manager.instance.GetKeyBindingMSG(itemData.msgType));
     }
 
-    public void Interact()
+    public void Interact(I_Player _interactingPlayer)
     {
         if (!isHeld.Value)
         {
