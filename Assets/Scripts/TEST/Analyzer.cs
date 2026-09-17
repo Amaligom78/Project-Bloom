@@ -7,6 +7,7 @@ public class Analyzer : NetworkBehaviour
 
     private I_Item currentItem;
     private float nextProcessTime;
+    private NetworkObject currentItemNetworkObject;
 
     //Network Variables
     [SerializeField] private NetworkVariable<Item_Type> requestedItemType = new NetworkVariable<Item_Type>();
@@ -41,15 +42,18 @@ public class Analyzer : NetworkBehaviour
         if (!IsServer) return;
         if (currentItem != null) return;
 
-        I_Item interactable = other.GetComponentInParent<I_Item>();
+        I_Item item = other.GetComponentInParent<I_Item>();
+        NetworkObject networkObject = other.GetComponentInParent<NetworkObject>();
 
-        if(interactable == null) return;
+        if (item == null) return;
+        if(networkObject == null) return;
 
-        Item_Data itemData = interactable.GetItemData();
+        Item_Data itemData = item.GetItemData();
 
         if(itemData == null) return;
 
-        currentItem = interactable;
+        currentItem = item;
+        currentItemNetworkObject = networkObject;
         itemCost.Value = itemData.cost;
         CheckItemData();
     }
@@ -74,8 +78,15 @@ public class Analyzer : NetworkBehaviour
         if (Time.time < nextProcessTime) return;
         if (currentItem == null) return;
         if(!rightItemPlaced.Value) return;
+        if(currentItemNetworkObject == null) return;
 
         nextProcessTime = Time.time + 1f;
         Game_Manager.instance.AddEarnings(itemCost.Value);
+        currentItemNetworkObject.Despawn(false);
+
+        currentItem = null;
+        currentItemNetworkObject = null;
+        rightItemPlaced.Value = false;
+        itemCost.Value = 0;
     }
 }

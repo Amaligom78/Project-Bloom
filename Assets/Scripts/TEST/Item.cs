@@ -96,6 +96,7 @@ public class Item : NetworkBehaviour, I_Interactable, I_Holdable, I_Item
     public override void OnNetworkDespawn()
     {
         isHeld.OnValueChanged -= OnHeldChanged;
+        gameObject.SetActive(false);
     }
 
     private void OnHeldChanged(bool previousValue, bool newValue)
