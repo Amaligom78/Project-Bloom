@@ -69,7 +69,9 @@ public class Analyzer : NetworkBehaviour
         if (interactable != currentItem) return;
 
         currentItem = null;
+        currentItemNetworkObject = null;
         rightItemPlaced.Value = false;
+        itemCost.Value = 0;
     }
 
     [Rpc(SendTo.Server)]
@@ -80,7 +82,7 @@ public class Analyzer : NetworkBehaviour
         if(!rightItemPlaced.Value) return;
         if(currentItemNetworkObject == null) return;
 
-        nextProcessTime = Time.time + 1f;
+        nextProcessTime = Time.time + .5f;
         Game_Manager.instance.AddEarnings(itemCost.Value);
         currentItemNetworkObject.Despawn(false);
 
