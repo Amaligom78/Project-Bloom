@@ -10,7 +10,6 @@ public class Clock_UI : NetworkBehaviour
     public TMP_Text clockTxt;
     private float timer = 0f;
 
-
     [SerializeField] private NetworkVariable<bool> isTicking = new NetworkVariable<bool>(false);
     [SerializeField] private NetworkVariable<int> remainingSeconds = new NetworkVariable<int>(60);
 

@@ -8,6 +8,7 @@ public class Game_Manager : NetworkBehaviour
     public static Game_Manager instance;
 
     private NetworkVariable<int> earnings = new NetworkVariable<int>();
+    private NetworkVariable<int> playersStarted = new NetworkVariable<int>();
 
     private void Awake()
     {
@@ -17,7 +18,9 @@ public class Game_Manager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         earnings.OnValueChanged += OnAddEarnings;
+        playersStarted.OnValueChanged += OnChangePlayerStart;
         UpdateEarningsUI(earnings.Value);
+        UpdatePlayerCount(playersStarted.Value);
     }
 
     public override void OnNetworkDespawn()
@@ -42,4 +45,26 @@ public class Game_Manager : NetworkBehaviour
         UI_Manager.instance.hud.UpdateEarningsUI(_amount.ToString());
     }
 
+    public void AddPlayerStartCount()
+    {
+        playersStarted.Value++;
+    }
+
+    public void RemovePlayerStartCount()
+    {
+        playersStarted.Value--;
+    }
+
+    public void OnChangePlayerStart(int previousValue, int newValue)
+    {
+        UpdatePlayerCount(newValue);
+    }
+
+    public void UpdatePlayerCount(int _playersStarted)
+    {
+        if(_playersStarted >= NetworkManager.Singleton.ConnectedClients.Count)
+        {
+            Debug.Log("Shift has started!");
+        }
+    }
 }
